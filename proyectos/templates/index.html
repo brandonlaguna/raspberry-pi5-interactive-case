@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estación de Monitoreo Ambiental</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          color: #333;
+          margin: 0;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+      .container {
+          background-color: #fff;
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          max-width: 800px;
+          width: 100%;
+          text-align: center;
+      }
+      h1 {
+          color: #0056b3;
+          margin-bottom: 20px;
+      }
+      .sensor-data {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          margin-top: 30px;
+      }
+      .data-card {
+          background-color: #e9f5ff;
+          border: 1px solid #cceeff;
+          border-radius: 6px;
+          padding: 15px;
+          text-align: left;
+      }
+      .data-card h3 {
+          color: #007bff;
+          margin-top: 0;
+          font-size: 1.2em;
+      }
+      .data-card p {
+          margin: 5px 0;
+          font-size: 1.1em;
+      }
+      .timestamp {
+          margin-top: 20px;
+          font-size: 0.9em;
+          color: #666;
+      }
+      .loading {
+          color: #007bff;
+          font-style: italic;
+      }
+      .error {
+          color: #dc3545;
+          font-weight: bold;
+      }
+      button {
+          background-color: #007bff;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 1em;
+          margin-top: 20px;
+      }
+      button:hover {
+          background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Estación de Monitoreo Ambiental con Raspberry Pi 5</h1>
+      <p>
+        Datos en tiempo real de temperatura, humedad, presión y luminosidad.
+      </p>
+
+      <div class="sensor-data" id="sensor-data-display">
+        <div class="data-card">
+          <h3>Temperatura (DHT22)</h3>
+          <p id="temp_dht">Cargando...</p>
+        </div>
+        <div class="data-card">
+          <h3>Humedad (DHT22)</h3>
+          <p id="hum_dht">Cargando...</p>
+        </div>
+        <div class="data-card">
+          <h3>Temperatura (BME280)</h3>
+          <p id="temp_bme">Cargando...</p>
+        </div>
+        <div class="data-card">
+          <h3>Presión (BME280)</h3>
+          <p id="pres_bme">Cargando...</p>
+        </div>
+        <div class="data-card">
+          <h3>Altitud (BME280)</h3>
+          <p id="alt_bme">Cargando...</p>
+        </div>
+        <div class="data-card">
+          <h3>Humedad (BME280)</h3>
+          <p id="hum_bme">Cargando...</p>
+        </div>
+        <div class="data-card">
+          <h3>Luminosidad</h3>
+          <p id="luminosity">Cargando...</p>
+          <p>
+            <small
+              >(Valor raw LDR: <span id="ldr_raw">Cargando...</span>)</small
+            >
+          </p>
+        </div>
+      </div>
+
+      <p class="timestamp" id="last-updated">
+        Última actualización: Cargando...
+      </p>
+      <button onclick="fetchData()">Actualizar Ahora</button>
+    </div>
+
+    <script>
+      // Función para obtener los datos de los sensores
+      async function fetchData() {
+          try {
+              document.getElementById('last-updated').textContent = 'Última actualización: Cargando...';
+              const response = await fetch('/data');
+              const data = await response.json();
+
+              document.getElementById('temp_dht').textContent = `${data.temperature_dht} °C`;
+              document.getElementById('hum_dht').textContent = `${data.humidity_dht} %`;
+              document.getElementById('temp_bme').textContent = `${data.temperature_bme} °C`;
+              document.getElementById('pres_bme').textContent = `${data.pressure_bme} hPa`;
+              document.getElementById('alt_bme').textContent = `${data.altitude_bme} m`;
+              document.getElementById('hum_bme').textContent = `${data.humidity_bme} %`;
+              document.getElementById('luminosity').textContent = `${data.luminosity} %`;
+              document.getElementById('ldr_raw').textContent = `${data.ldr_raw}`;
+              document.getElementById('last-updated').textContent = `Última actualización: ${data.timestamp}`;
+          } catch (error) {
+              console.error("Error al obtener los datos:", error);
+              document.getElementById('last-updated').textContent = 'Error al cargar los datos.';
+              // Opcional: mostrar un mensaje de error en cada campo
+              document.getElementById('temp_dht').textContent = 'Error';
+              document.getElementById('hum_dht').textContent = 'Error';
+              document.getElementById('temp_bme').textContent = 'Error';
+              document.getElementById('pres_bme').textContent = 'Error';
+              document.getElementById('alt_bme').textContent = 'Error';
+              document.getElementById('hum_bme').textContent = 'Error';
+              document.getElementById('luminosity').textContent = 'Error';
+              document.getElementById('ldr_raw').textContent = 'Error';
+          }
+      }
+
+      // Llamar a fetchData al cargar la página y cada 5 segundos
+      document.addEventListener('DOMContentLoaded', () => {
+          fetchData(); // Obtener datos al cargar la página
+          setInterval(fetchData, 5000); // Actualizar cada 5 segundos
+      });
+    </script>
+  </body>
+</html>
