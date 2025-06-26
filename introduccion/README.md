@@ -4,7 +4,7 @@
 
 ## 💡 Objetivo
 
-Este manual tiene como finalidad familiarizarte con la **Maleta Interactiva** y la **Raspberry Pi 5**, enseñándote a encenderla, navegar en su sistema y ejecutar tu primer programa en Python.
+Este manual tiene como finalidad familiarizarte con la **Maleta Interactiva** y la **Raspberry Pi 5**, enseñándole a encenderla, navegar en su sistema y ejecutar tu primer programa en Python.
 
 ## 📚 Contenido
 
@@ -28,13 +28,26 @@ Dentro de la maleta encontrarás:
 - 🧵 **Raspberry Pi 5**
 - 💻 **Pantalla y teclado**
 - 🛠 **Protoboard y cables**
-- 🎨 **Displays (LCD, 7 segmentos, OLED)**
+- 🎨 **Displays (LCD y 7 segmentos)**
 - 🔌 **Sensores (temperatura, proximidad, luz, etc.)**
 - 🛠 **Relays y servos**
 
 ## 2.1 Conociendo la Raspberry pi 5
 
 ![Vista de la maleta](assets/pines-gpio.webp)
+
+### Pines de alimentacion
+
+- **5V:** (X2) Pines de 5V para alimentar dispositivos externos
+- **3.3V:** (X1) Pin de 3.3V para alimentar sipositivos externos que requieran esta tension
+- **GND:** (X8) Pines de tierra para completar los circuitos
+
+### Pines GPIO (Entradas/Salidas de proposito general)
+
+- **Conector:** la placa tiene 40 pines GPIO
+- **Funcionalidad:** Estos pines permiten configurar entradas y salidas digitales para controlar dispositivos externos. 
+- **Tensión:** Los pines GPIO soportan 3.3V y no son tolerantes a tensiones de 5V, por lo que es importante tenerlo en cuenta al conectar dispositivos externos.
+
 
 ## 3. Encendido y configuración inicial
 
