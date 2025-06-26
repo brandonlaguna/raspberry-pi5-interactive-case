@@ -11,4 +11,4 @@ Bienvenido a los manuales de la maleta interactiva. Aquí encontrarás actividad
 3. [Displays y Visualización](displays/README.md)
 4. [Motores y Servos](motores/README.md)
 5. [Conectividad](conectividad/README.md)
-6. [Proyecto Integrador](proyecto/README.md)
+6. [Proyecto Integrador](proyectos/README.md)
