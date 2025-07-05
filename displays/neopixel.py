@@ -1,22 +1,28 @@
-import board
-import neopixel
 import time
+from rpi_ws281x import PixelStrip, Color
 
-NUM_PIXELS = 16
-PIXEL_PIN = board.D18
-BRIGHTNESS = 0.5
+# Configuración de LEDs
+LED_COUNT = 16         # Número de LEDs
+LED_PIN = 18           # GPIO 18 (PWM)
+LED_FREQ_HZ = 800000   # Frecuencia típica WS2812
+LED_DMA = 10
+LED_BRIGHTNESS = 128
+LED_INVERT = False
+LED_CHANNEL = 0
 
-pixels = neopixel.NeoPixel(PIXEL_PIN, NUM_PIXELS, brightness=BRIGHTNESS, auto_write=False)
+# Inicializa la tira
+strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+strip.begin()
 
-# Secuencia básica de colores
-colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]  # rojo, verde, azul
+# Efecto de color secuencial
+colors = [Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)]
 
 for color in colors:
-    for i in range(NUM_PIXELS):
-        pixels[i] = color
-    pixels.show()
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, color)
+    strip.show()
     time.sleep(1)
 
-# Apaga todos
-pixels.fill((0, 0, 0))
-pixels.show()
+# Apaga todo
+strip.fill(Color(0, 0, 0))
+strip.show()
