@@ -1,27 +1,36 @@
+from luma.led_matrix.device import max7219
+from luma.core.interface.serial import spi, noop
+from luma.core.render import canvas
+from PIL import ImageFont
+import Adafruit_DHT
 import time
-import board
-import adafruit_dht
 
-# Inicializar el sensor DHT11 en el pin GPIO 4
-dhtDevice = adafruit_dht.DHT11(board.D4)
+# --- Configuración del sensor DHT11 ---
+DHT_SENSOR = Adafruit_DHT.DHT11
+DHT_PIN = 4  # GPIO 4 (pin físico 7)
 
-print("Leyendo datos del DHT11. Presiona Ctrl+C para detener.")
+# --- Configuración de la matriz LED ---
+serial = spi(port=0, device=0, gpio=noop())
+device = max7219(serial, cascaded=4, block_orientation=-90, rotate=0)
 
-try:
-    while True:
-        temperature_c = dhtDevice.temperature
-        humidity = dhtDevice.humidity
+device.contrast(16)
+device.clear()
 
-        if temperature_c is not None and humidity is not None:
-            print(f"Temperatura: {temperature_c:.1f} °C  |  Humedad: {humidity:.1f} %")
-        else:
-            print("Fallo en la lectura del sensor.")
+font = ImageFont.load_default()
 
-        time.sleep(2)
+print("Mostrando temperatura en la matriz LED...")
 
-except KeyboardInterrupt:
-    print("\nLectura finalizada.")
-except Exception as e:
-    print(f"Error: {e}")
-finally:
-    dhtDevice.exit()
+while True:
+    # Leer temperatura del DHT11
+    humedad, temperatura = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
+
+    if temperatura is not None:
+        mensaje = f" Temp: {temperatura}°C "
+    else:
+        mensaje = " Error al leer DHT11 "
+
+    # Mostrar el mensaje desplazándose
+    for i in range(len(mensaje) * 8):
+        with canvas(device) as draw:
+            draw.text((-i + device.width, -2), mensaje, fill="white", font=font)
+        time.sleep(0.05)
