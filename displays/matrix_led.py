@@ -6,7 +6,7 @@ import time
 
 # Configuración del dispositivo
 serial = spi(port=0, device=0, gpio=noop())
-device = max7219(serial, cascaded=4, block_orientation=90, rotate=0)
+device = max7219(serial, cascaded=4, block_orientation=-90, rotate=0)
 
 # Tamaño total: 32x8 (4 matrices 8x8)
 device.contrast(16)
@@ -22,5 +22,5 @@ print("Mostrando mensaje en la matriz LED...")
 while True:
     for i in range(len(mensaje) * 8):
         with canvas(device) as draw:
-            draw.text((-i + device.width, 0), mensaje, fill="white", font=font)
+            draw.text((-i + device.width, -2), mensaje, fill="white", font=font)
         time.sleep(0.05)
