@@ -2,6 +2,12 @@
 env/
 venv/
 displays/env/
+conectividad/env/
+introduccion/env/
+leds/env/
+motores/env
+proyectos/env
+sensores/env
 
 # ==== ARCHIVOS TEMPORALES DE PYTHON ====
 __pycache__/
