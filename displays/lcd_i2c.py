@@ -1,13 +1,28 @@
-from RPLCD.i2c import CharLCD
+import RPi.GPIO as GPIO
 import time
+from RPLCD.i2c import CharLCD
 
-# Ajusta la dirección I²C según el escaneo
-lcd = CharLCD('PCF8574', 0x27)  # 0x27 o 0x3F
+# Configuración GPIO
+PIR_PIN = 17
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIR_PIN, GPIO.IN)
 
-lcd.clear()
-lcd.write_string("Hola Raspberry Pi")
-lcd.crlf()  # Salto de línea
-lcd.write_string("LCD 16x2 I2C")
+# Configuración LCD (dirección I2C 0x27 o 0x3F según tu módulo)
+lcd = CharLCD('PCF8574', 0x27)
 
-time.sleep(5)
-lcd.clear()
+try:
+    while True:
+        if GPIO.input(PIR_PIN):
+            print("Movimiento detectado")
+            lcd.clear()
+            lcd.write_string("Movimiento")
+            lcd.cursor_pos = (1, 0)
+            lcd.write_string("detectado!")
+        else:
+            print("Sin movimiento")
+            lcd.clear()
+            lcd.write_string("Sin movimiento")
+        time.sleep(0.5)
+
+except KeyboardInterrupt:
+    GPIO.cleanup()
