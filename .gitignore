@@ -1,0 +1,29 @@
+# ==== ENTORNOS VIRTUALES ====
+env/
+venv/
+displays/env/
+
+# ==== ARCHIVOS TEMPORALES DE PYTHON ====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+
+# ==== ARCHIVOS DE CONFIGURACIÓN LOCAL ====
+*.env
+*.ini
+*.cfg
+
+# ==== ARCHIVOS DE SISTEMA ====
+.DS_Store
+Thumbs.db
+
+# ==== LOGS ====
+*.log
+
+# ==== BACKUPS ====
+*.bak
+*.tmp
+*.swp

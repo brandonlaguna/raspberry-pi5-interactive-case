@@ -32,7 +32,7 @@ Los módulos utilizados se conectan por **I2C o SPI** y permiten visualizar text
 
 ---
 
-# 1 Módulo de 4 matrices LED 8x8 (MAX7219) – SPI
+# 1. Módulo de 4 matrices LED 8x8 (MAX7219) – SPI
 
 ## 1.1 :busstop: Creacion de ambiente
 
