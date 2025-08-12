@@ -2,10 +2,10 @@ from gpiozero import MotionSensor
 from RPLCD.i2c import CharLCD
 import time
 
-# PIR en GPIO 17
-pir = MotionSensor(17)
+# PIR en GPIO17 (Pin físico 11)
+pir = MotionSensor(17, pin_factory=None)  # gpiozero detectará rpi-lgpio
 
-# LCD en dirección I2C 0x27 (ajusta si es diferente)
+# LCD en dirección 0x27
 lcd = CharLCD('PCF8574', 0x27)
 
 lcd.clear()
