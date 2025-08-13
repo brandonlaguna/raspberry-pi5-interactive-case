@@ -56,10 +56,6 @@ sudo apt install -y python3-lgpio python3-rpi-lgpio i2c-tools python3-smbus
 
 ## ![Instalacion libreria](assets/20250812_00h54m59s_grim.png)
 
-```bash
-sudo apt install -y python3-lgpio python3-rpi-lgpio i2c-tools python3-smbus
-```
-
 ---
 
 ## 1.2 :computer: Configuracion del sistema
