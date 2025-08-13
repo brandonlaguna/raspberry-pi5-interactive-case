@@ -24,7 +24,7 @@ COL_PINS = [6, 13, 19]      # Columnas
 RELAY_PIN = 21              # Pin de control del relé
 
 # Contraseña
-PASSWORD = "1235"
+PASSWORD = "1234"
 input_buffer = ""
 
 # Estado del relé (True = cerrado, False = abierto)

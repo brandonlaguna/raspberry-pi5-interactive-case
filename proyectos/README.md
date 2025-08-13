@@ -1,207 +1,281 @@
-# Proyecto: Estación de Monitoreo Ambiental con Raspberry Pi 5 y Flask
+# :hammer: Proyectos
 
-## Descripción del Proyecto
+Este documento detalla las conexiones, configuraciones e instalaciones para poder ejecutar los distintos proyectos mencionados aqui.
 
-Este proyecto tiene como objetivo construir una estación de monitoreo ambiental utilizando una **Raspberry Pi 5**, varios sensores de medición y el framework web **Flask**. La aplicación web resultante mostrará los datos de los sensores en tiempo real, accesible desde cualquier dispositivo en la red local.
+1. Proyecto solicitud contraseña para activar relé
+2. Proyecto
 
-Este proyecto está diseñado para estudiantes interesados en el Internet de las Cosas (IoT), la programación en Python, la electrónica y el desarrollo web básico.
+Esta carpeta contiene ejemplos practicos para la conexion y uso del:
 
-## Objetivos de Aprendizaje
+- Teclado matricial
+- LCD 16x2 I2C
+- Relé
 
-- Familiarizarse con la Raspberry Pi 5 y su configuración.
-- Conectar y leer datos de diferentes tipos de sensores electrónicos.
-- Programar en Python para interactuar con hardware y el framework Flask.
-- Desarrollar una aplicación web sencilla para visualizar datos.
-- Entender los conceptos básicos de la comunicación I2C y SPI.
-- Poner en práctica habilidades de resolución de problemas con hardware y software.
+---
 
-## Materiales Necesarios
+## 📂 Archivos incluidos
 
-Asegúrate de tener todos estos componentes antes de comenzar:
+| Archivo                    | Descripción                                      |
+| -------------------------- | ------------------------------------------------ |
+| `num_keyboard_password.py` | Proyecto ingreso de contraseña para activar relé |
+| `README.md`                | Este archivo, con la documentación del uso       |
 
-### Hardware
+---
 
-- **1x Raspberry Pi 5** (con fuente de alimentación USB-C y disipador/ventilador)
-- **1x Tarjeta microSD** (16GB o más, Clase 10)
-- **1x Lector de tarjetas microSD**
-- **1x Sensor DHT11 o DHT22** (Temperatura y Humedad) - _Recomendado DHT22 por mayor precisión_
-- **1x Sensor BMP180 o BME280** (Presión barométrica, Temperatura, Altitud - BME280 también mide humedad) - _Recomendado BME280 por versatilidad_
-- **1x Sensor LDR** (Fotorresistencia para luminosidad)
-- **1x Convertidor Analógico-Digital ADC MCP3008** (Necesario para el LDR)
-- **1x Protoboard**
-- **Cables jumper** (macho-hembra, macho-macho)
-- **Resistencias** (10kΩ para el LDR)
-- Monitor, teclado y ratón (para la configuración inicial o acceso directo)
-- Cable HDMI (micro HDMI a HDMI estándar)
-- Cable de red Ethernet (opcional) o adaptador WiFi
+## 🔧 Requisitos de hardware
 
-### Software
+| Componente                        | Detalles                                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Raspberry Pi 5                    | GPIO habilitado, I2C/SPI activos                                                                |
+| Pantalla LCD 16x2 + I2C           | Módulo con dirección común `0x27`                                                               |
+| Teclado Matricial de membrana 3x4 | Conexion Standard GPIO                                                                          |
+| Relé                              | Dispositivo electromecánico que funciona como un interruptor controlado por una señal eléctrica |
+| Cables jumper                     | Para conexión de los displays                                                                   |
 
-- **Raspberry Pi OS Lite** (recomendado para ahorrar recursos) o Raspberry Pi OS Desktop
-- **Python 3**
-- **Bibliotecas Python:** `RPi.GPIO`, `Adafruit_DHT`, `smbus`, `smbus2`, `Pillow`, `Adafruit_BME280` (o `Adafruit_BMP`), `spidev`
-- **Flask**
+---
 
-## Estructura del Proyecto
+# 1. Proyecto de ingreso de contraseña para activar o desactivar relé
 
-├── app.py
-├── sensor_readings.py
-└── templates/
-└── index.html
+## 1.1 :inbox_tray: Instalacion de librerias globales
 
-- `app.py`: El archivo principal de la aplicación Flask, maneja las rutas web y renderiza la página.
-- `sensor_readings.py`: Módulo Python que contiene la lógica para leer los datos de los sensores.
-- `templates/`: Carpeta que almacena los archivos HTML renderizados por Flask.
-  - `index.html`: La plantilla HTML de la página web que muestra los datos de los sensores.
+En este punto se instalarán los paquetes esenciales, los cuales tendrán compatibilidad con los pines _GPIO_ en la _Raspberry Pi 5_ y el sistema operativo _Raspberry Pi Os_
 
-## 1. Configuración Inicial de la Raspberry Pi 5
+- Actualizacion de la lista de paquetes disponibles y sus versiones
 
-### 1.1. Preparación de la Tarjeta microSD
+```bash
+sudo apt update
+```
 
-1.  Descarga e instala **Raspberry Pi Imager** desde [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/).
-2.  Inserta tu tarjeta microSD.
-3.  Abre Raspberry Pi Imager, selecciona `Raspberry Pi OS Lite (64-bit)` (o la versión de escritorio) y tu tarjeta.
-4.  Haz clic en el icono de engranaje (Configuración Avanzada) y:
-    - Habilita SSH.
-    - Establece un usuario y contraseña.
-    - Configura la Wi-Fi (si la usarás).
-    - Configura la localización.
-5.  Haz clic en "Write" y espera a que el proceso termine.
+- Instalacion de paquetes
 
-### 1.2. Primer Arranque y Actualización
+```bash
+sudo apt install -y python3-lgpio python3-rpi-lgpio i2c-tools python3-smbus
+```
 
-1.  Inserta la tarjeta microSD en la Raspberry Pi 5.
-2.  Conecta periféricos (monitor, teclado, ratón) y la fuente de alimentación.
-3.  Una vez iniciado el sistema, abre una terminal y actualiza los paquetes:
-    ```bash
-    sudo apt update
-    sudo apt upgrade -y
-    ```
+> Dependencias GPIO/I2C (rpi-lgpio shim + lgpio)
 
-### 1.3. Habilitar Interfaces
+## ![Instalacion libreria](assets/20250812_00h54m59s_grim.png)
 
-Para la comunicación con los sensores, habilita I2C y SPI:
+```bash
+sudo apt install -y python3-lgpio python3-rpi-lgpio i2c-tools python3-smbus
+```
 
-1.  Ejecuta:
-    ```bash
-    sudo raspi-config
-    ```
-2.  Navega a **3 Interface Options**.
-3.  Selecciona **P3 I2C** y elige **Yes**.
-4.  Selecciona **P4 SPI** y elige **Yes**.
-5.  Sal de `raspi-config` y reinicia la Raspberry Pi.
+---
 
-## 2. Conexión de Sensores
+## 1.2 :computer: Configuracion del sistema
 
-**¡IMPORTANTE!** Asegúrate de que la Raspberry Pi esté **APAGADA y DESCONECTADA de la alimentación** antes de realizar cualquier conexión de hardware.
+En este punto se mencionarán las configuraciones que deba realizarse para poder acceder a las caracteristicas I2C que permiten el uso de pantallas
 
-### 2.1. Pinout de la Raspberry Pi 5
+- Abrir menu de configuracion de Raspberry Pi 5
 
-Familiarízate con los pines GPIO de tu Raspberry Pi 5.
+```bash
+sudo raspi-config
+```
 
-![Raspberry Pi 5 GPIO Pinout Diagram](images/pi5_gpio_pinout.png)
-_(Esta imagen es un marcador de posición, deberías reemplazarla con una imagen real del pinout de la Pi 5 si es posible)._
+- Habilitar Interfaz I2C (si aún no está)
 
-### 2.2. Conexión del Sensor DHT11/DHT22
+## ![Abrir menu de configuracion de Raspberry Pi 5](assets/20250812_00h55m28s_grim.png)
 
-- **Pin VCC/3V3:** Raspberry Pi 3.3V (Pin 1 ó 17)
-- **Pin GND:** Raspberry Pi GND (cualquier pin GND)
-- **Pin Data:** Raspberry Pi GPIO 4 (Pin 7)
+> Interfacing Options -> I2C -> Enable
 
-### 2.3. Conexión del Sensor BMP180/BME280 (I2C)
+## ![Habilitar Interfaz I2C](assets/20250812_00h55m35s_grim.png)
 
-- **Pin VCC/3V3:** Raspberry Pi 3.3V (Pin 1 ó 17)
-- **Pin GND:** Raspberry Pi GND
-- **Pin SDA:** Raspberry Pi GPIO 2 (Pin 3)
-- **Pin SCL:** Raspberry Pi GPIO 3 (Pin 5)
+> Activar
 
-### 2.4. Conexión del Sensor LDR con MCP3008 (ADC)
+## ![Habilitar I2C](assets/20250812_00h55m39s_grim.png)
 
-| Pin MCP3008 | Conexión Raspberry Pi   |
-| :---------- | :---------------------- |
-| VDD         | 3.3V (Pin 1 ó 17)       |
-| VREF        | 3.3V (Pin 1 ó 17)       |
-| AGND        | GND                     |
-| CLK         | SCLK (GPIO 11 - Pin 23) |
-| DOUT        | MISO (GPIO 9 - Pin 21)  |
-| DIN         | MOSI (GPIO 10 - Pin 19) |
-| CS/SHDN     | CE0 (GPIO 8 - Pin 24)   |
-| DGND        | GND                     |
+- Reiniciar
 
-**LDR al MCP3008:**
+```bash
+sudo reboot
+```
 
-1.  Un extremo del LDR a 3.3V.
-2.  El otro extremo del LDR a **MCP3008 CH0** (Pin 13).
-3.  Una resistencia de 10kΩ desde **MCP3008 CH0** a GND.
+- Verificacion de modulo I2C
 
-## 3. Instalación de Bibliotecas Python
+Con el paquete _i2c-tools_ podemos hacer uso de la herramienta _i2cdetect_ y conocer la direccion en que está ubicado el dispositivo
 
-1.  **Actualizar pip:**
-    ```bash
-    sudo apt install python3-pip -y
-    pip install --upgrade pip
-    ```
-2.  **Instalar Bibliotecas para DHT11/DHT22:**
-    ```bash
-    sudo pip3 install Adafruit_DHT
-    ```
-3.  **Instalar Bibliotecas para I2C (BMP180/BME280):**
-    ```bash
-    sudo apt install i2c-tools -y
-    sudo pip3 install smbus smbus2
-    sudo pip3 install adafruit-circuitpython-bme280 # O adafruit-circuitpython-bmp280
-    ```
-    Verifica el sensor con: `i2cdetect -y 1`
-4.  **Instalar Bibliotecas para SPI (MCP3008):**
-    ```bash
-    sudo pip3 install spidev
-    ```
-5.  **Instalar Flask:**
-    ```bash
-    pip3 install Flask
-    ```
+```bash
+i2cdetect -y 1
+```
 
-## 4. Ejecución de la Aplicación Flask
+Te mostrará una tabla, y deberías ver un número hexadecimal como 27 o 3F → esa es la dirección I²C del LCD.
 
-Para poner en marcha tu aplicación web Flask y ver los datos de los sensores en acción, sigue estos pasos:
+## ![Habilitar I2C](assets/20250812_00h56m39s_grim.png)
 
-1.  **Abre una terminal en tu Raspberry Pi.** Puedes hacerlo directamente desde el entorno de escritorio de la Raspberry Pi, o a través de SSH desde otra computadora.
+> Configuraciones posibles 0x27 o 0x3F
 
-2.  **Navega a la carpeta de tu proyecto.** Asegúrate de estar en el directorio donde guardaste los archivos `app.py` y `sensor_readings.py`, y la carpeta `templates/`.
+---
 
-    ```bash
-    cd my_sensor_app/
-    ```
+## 1.3 :busstop: Creacion de ambiente
 
-3.  **Ejecuta la aplicación Flask:**
+Creacion de ambiente de desarrollo, (env) _importante_ para efectos de mantener el ecosistema de raspberry pi os de las dependencias innecesarias y evitar conflictos al momento de usar los pines GPIO
 
-    ```bash
-    python3 app.py
-    ```
+En este proyecto que requiere un nivel de complejidad alto y que requiere las caracteristicas de la placa Raspberry Pi 5
 
-4.  **Verás una salida similar a esta:**
+- la terminal debe estar ubicada en la carpeta de proyectos como en el siguiente ejemplo.
 
-    ```
-     * Serving Flask app 'app'
-     * Debug mode: on
-    WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
-     * Running on [http://0.0.0.0:5000](http://0.0.0.0:5000)
-    Press CTRL+C to quit
-    ```
+```bash
+uts@raspberrypi:~/Documents/raspberry-pi5-interactive-case/proyectos $
+```
 
-    La línea `* Running on http://0.0.0.0:5000` te indica que el servidor web Flask está escuchando en todas las interfaces de red de tu Raspberry Pi en el puerto `5000`. Esto significa que la aplicación será accesible desde cualquier dispositivo conectado a la misma red local que tu Raspberry Pi.
+- Si no es asi es necesario usar el siguiente comando para ingresar a la carpeta
 
-5.  **Para acceder a la página web:**
+```bash
+cd /Documents/raspberry-pi5-interactive-case/proyectos
+```
 
-    - **Si estás usando el navegador web de la propia Raspberry Pi**, abre:
+> se recomienda tener la carpeta del proyecto en Documents
 
-      - `http://localhost:5000`
-      - o `http://127.0.0.1:5000`
+## ![Posicion de la carpeta proyectos en la terminal](assets/20250812_00h52m29s_grim.png)
 
-    - **Si estás en otra computadora o dispositivo (como un teléfono o laptop) en la misma red local**, necesitarás la dirección IP de tu Raspberry Pi. Puedes encontrarla ejecutando el siguiente comando en la terminal de tu Raspberry Pi:
+- Creacion
 
-      ```bash
-      hostname -I
-      ```
+```bash
+python3 -m venv env --system-site-packages
+```
 
-      Por ejemplo, si el comando te devuelve `192.168.1.100`, entonces abre `http://192.168.1.100:5000` en el navegador de tu computadora.
+> --system-site-packages permite que el ambiente de desarrollo tenga las referencias de los paquetes instalados en el sistema
+
+- Activacion
+
+```bash
+source env/bin/activate
+```
+
+> Este comando accede a la carpeta (env) creada por la instruccion anterior
+
+## ![Activacion de ambiente](assets/20250812_00h57m12s_grim.png)
+
+---
+
+## 1.4 :open_file_folder: Insatalacion de dependencias de entorno
+
+En este punto solo queda instalar las dependencias que trabajaran a nivel de entorno, ya que no requieren de permisos especificos de la placa Raspberry Pi, y son las que ayudan a controlar el display LCD I2C 16\*2
+
+```bash
+pip install RPLCD smbus2
+```
+
+## ![Activacion de ambiente](assets/20250812_00h57m25s_grim.png)
+
+---
+
+## 1.5 :round_pushpin: Coneccion de modulos
+
+En este punto se especificará en que pines debe ir conectado los modulos y sensores a la placa Raspberry Pi 5
+
+- LCD I2C 16x2
+  | Pin Modulo | Conexión en Raspberry Pi | Pin Fisico |
+  | - | - | - |
+  | SDA | GPIO2 | 3 |
+  | SCL | GPIO3 | 5 |
+  | VCC | VCC | 2 o 4 |
+  | GND | GND | 6 |
+
+- Teclado Membrana 3x4
+  | Pin Modulo | Conexión en Raspberry Pi | Pin Fisico |
+  | - | - | - |
+  | Filas: R1 | GPIO17 | 11 |
+  | R2 | GPIO27 | 13 |
+  | R3 | GPIO22 | 15 |
+  | R4 | GPIO5 | 29 |
+  | Columnas: C1 | GPIO6 | 31 |
+  | C2 | GPIO13 | 33 |
+  | C3 | GPIO19 | 35 |
+
+- Relé
+  | Pin Modulo | Conexión en Raspberry Pi | Pin Fisico |
+  | - | - | - |
+  | IN | GPIO21 | 40 |
+  | VCC | 5V | 2 o 4 |
+  | GND | GND | 6 |
+
+- Conexion Raspberry Pi 5
+
+## ![Montaje 1](assets/montaje1.jpeg)
+
+## ![Montaje 3](assets/montaje3.jpeg)
+
+- Conexion Teclado Membrana 3x4
+
+## ![Montaje 2](assets/montaje2.jpeg)
+
+- Conexion Display LCD y Relé
+
+## ![Montaje 4](assets/montaje4.jpeg)
+
+- Conexion Relé
+
+## ![Montaje 5](assets/montaje5.jpeg)
+
+---
+
+## 1.6 :wrench: Configurar Script
+
+En este punto se requiere hacer una configuracion al script de python, el modulo I2C del display LCD, para este ejercicio de hará uso de un paquete instalado previamente llamado _i2c-tools_
+
+En una terminal de comandos nueva ejecutamos el siguiente comando
+
+```bash
+i2cdetect -y 1
+```
+
+este comando mostrará una tabla de codigos Hexadecimales como la siguiente
+
+## ![Visualizacion puerto I2C](assets/20250812_00h56m39s_grim.png)
+
+> Este comando muestra en la matriz 27 en la fila 20 y columna 07, eso significa que el dispositivo I2C que tienes conectado (en este caso, el módulo adaptador del LCD) está respondiendo en la dirección hexadecimal 0x27 en el bus I2C número 1.
+
+¿Qué significa esto para tu script?
+En el código donde inicializas el LCD con RPLCD o librerías similares, debes usar:
+
+```python
+I2C_ADDR = 0x27
+```
+
+Otras direcciones posibles
+Dependiendo del chip adaptador (generalmente un PCF8574 o PCF8574A), podrías encontrar valores como:
+
+- 0x27 (PCF8574 común, sin modificar jumpers de dirección)
+
+- 0x3F (muy habitual en otras placas I²C LCD)
+
+- 0x20, 0x21, 0x38, etc. (si se cambian puentes de configuración A0, A1, A2 en el módulo)
+
+También, si hay más de un dispositivo I2C conectado, i2cdetect mostrará más de una celda ocupada.
+
+---
+
+## 1.7 :checkered_flag: Eejecucion de script
+
+En este punto realizaremos finalmente la ejecion del codigo y realizar pruebas a este proyecto.
+
+Con la terminal de comandos ubicada en la carpeta _Proyectos_ dentro del manual digital, y tambien visualizando que en la terminal está activo el ambiente de pruebas (env) y debe verse como:
+
+```env
+(env) uts@raspberrypi:~/Documents/raspberry-pi5-interactive-case/proyectos
+```
+
+## ![Ambiente listo para ejecutar el script](assets/20250812_00h57m12s_grim.png)
+
+con el comando _ls_ puedes visualizar todos los archivos que contiene esta carpeta
+
+```bash
+ls
+```
+
+## ![Ambiente listo para ejecutar el script](assets/20250812_00h57m45s_grim.png)
+
+Aqui podemos visualizar el archivo num_keyboard_password.py en la lista de archivos, podemos seleccionar el texto y copiarlo de la siguiente forma para ejecutarlo con el compilador de python
+
+```bash
+python num_keyboard_password.py
+```
+
+podemos ver en la pantalla LCD el texto "Ingrese Clave", la clave correcta para activar el Relé es 1234
+
+- ## ![Ejecucion 1](assets/ejecucion_proyecto1.jpeg)
+
+- ## ![Ejecucion 2](assets/ejecucion_proyecto2.jpeg)
+
+### Exitos...
